@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quiz – Levitação Magnética</title>
+<style>
+  :root{
+    --bg:#0b1020;
+    --card:#121935;
+    --accent:#6ee7ff;
+    --text:#e6ecff;
+    --muted:#9fb0ff;
+    --right:#1dd1a1;
+    --wrong:#ff6b6b;
+    --shadow: 0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; min-height:100vh; display:grid; place-items:center;
+    background: radial-gradient(1200px 800px at 70% -10%, #1b2657 0%, #0d1430 45%, #0a0f24 100%), var(--bg);
+    color:var(--text); font:500 16px/1.4 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  }
+  .app{
+    width:min(920px, 92vw);
+    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)) , var(--card);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:24px; box-shadow:var(--shadow);
+    padding:24px 22px 28px;
+    position:relative; overflow:hidden;
+  }
+  header{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
+  .logo{width:42px; height:42px; display:grid; place-items:center; border-radius:12px;
+    background:conic-gradient(from 180deg at 50% 50%, #1b9cff, #6ee7ff, #8fffca, #1b9cff);}
+  .title h1{font-size:20px; margin:0}
+  .title p{margin:0; color:var(--muted); font-size:13px}
+  .progress-wrap{margin:10px 0 20px}
+  .progress{height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden;}
+  .bar{height:100%; width:0%; background:linear-gradient(90deg, #28f5ff, #8fffca); transition:width .5s ease;}
+  .counter{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-top:8px;}
+  .card{background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:22px; position:relative;}
+  .question{font-size:20px; margin:0 0 14px;}
+  .options{display:grid; gap:12px; margin-top:14px;}
+  .btn{width:100%; text-align:left; padding:14px 16px; border-radius:14px; cursor:pointer;
+    border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03);
+    color:var(--text); transition:transform .08s ease, border-color .2s ease, background .2s ease;}
+  .btn:hover{ transform:translateY(-1px); border-color:rgba(255,255,255,.18);}
+  .btn:disabled{ opacity:.7; cursor:not-allowed;}
+  .correct{border-color:rgba(29,209,161,.7)!important;
+    background:linear-gradient(180deg, rgba(29,209,161,.18), rgba(29,209,161,.10));
+    animation:glowOk .35s ease;}
+  .wrong{border-color:rgba(255,107,107,.8)!important;
+    background:linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10));
+    animation:shake .35s ease;}
+  @keyframes glowOk {0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+  @keyframes shake {
+    0%,100%{transform:translateX(0)}
+    25%{transform:translateX(-6px)}
+    50%{transform:translateX(6px)}
+    75%{transform:translateX(-4px)}
+  }
+  .end{display:none; text-align:center; padding:26px 10px;}
+  .end h2{margin:0 0 6px; font-size:26px}
+  .end p{margin:6px 0 16px; color:var(--muted)}
+  .again{border:none; border-radius:12px; padding:12px 16px; cursor:pointer;
+    background:linear-gradient(90deg, #28f5ff, #8fffca); color:#072237; font-weight:700;}
+  .hidden{ display:none!important;}
+
+  /* Caixa de respostas (cheat Konami) */
+  .cheatBox{
+    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+    background:var(--card); border:2px solid var(--accent);
+    border-radius:16px; padding:20px; z-index:9999; width:80%; max-width:500px;
+    box-shadow:0 0 20px rgba(0,0,0,.6); text-align:left; display:none;
+  }
+  .cheatBox h3{margin-top:0; color:var(--accent);}
+  .cheatBox ul{padding-left:18px;}
+  .alertDificil{
+    position:fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:linear-gradient(90deg,#ff4e50,#f9d423);
+    color:#111;
+    font-size:28px;
+    font-weight:bold;
+    padding:20px 40px;
+    border-radius:16px;
+    box-shadow:0 0 20px rgba(255,0,0,.7);
+    text-align:center;
+    z-index:9999;
+    opacity:0;
+    animation:fadePulse 2s forwards;
+  }
+
+  @keyframes fadePulse{
+    0%{opacity:0; transform:translate(-50%,-50%) scale(0.5);}
+    50%{opacity:1; transform:translate(-50%,-50%) scale(1.1);}
+    100%{opacity:0; transform:translate(-50%,-50%) scale(1);}
+  }
+</style>
+</head>
+<body>
+<main class="app">
+  <header>
+    <div class="logo">⚡</div>
+    <div class="title">
+      <h1>Quiz – Levitação Magnética</h1>
+      <p>8 perguntas • acerte para avançar</p>
+    </div>
+  </header>
+  <section class="progress-wrap">
+    <div class="progress"><div class="bar"></div></div>
+    <div class="counter"><span class="step"></span><span class="score"></span></div>
+  </section>
+  <section class="card" id="card">
+    <h2 class="question" id="question">Carregando…</h2>
+    <div class="options" id="options"></div>
+  </section>
+  <section class="end" id="end">
+    <h2>Fim do quiz 🎉</h2>
+    <p id="finalText"></p>
+    <button class="again" id="again">Jogar novamente</button>
+  </section>
+</main>
+<div id="alertDificil" class="alertDificil hidden">❗ PERGUNTA ELIMINATÓRIA ❗</div>
+<div class="cheatBox" id="cheatBox">
+  <button id="closeCheat" style="
+    position:absolute;
+    top:8px;
+    right:10px;
+    background:none;
+    border:none;
+    color:var(--accent);
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+  ">×</button>
+  <h3>💡 Respostas do Quiz</h3>
+  <ul id="answersList"></ul>
+</div>
+
+
+<script>
+(() => {
+function shuffleArray(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// Array original de perguntas
+const questions = [
+  {
+    q: "O que permite o trem Maglev ‘flutuar’ sobre os trilhos?",
+    options: ["Efeito giroscópico das rodas","Campos magnéticos (eletromagnetismo)","Pressão de ar comprimido vinda do solo","Correntes marítimas subterrâneas","Energia solar direta nos trilhos"],
+    correct: 1
+  },
+  {
+    q: "Qual é a principal vantagem de não haver contato com os trilhos?",
+    options: ["Aumentar o consumo de energia","Reduzir o atrito e permitir altas velocidades","Produzir mais ruído","Facilitar curvas por derrapagem","Aumentar a emissão de poluentes"],
+    correct: 1
+  },
+  {
+    q: "O Maglev de Xangai é famoso por atingir aproximadamente:",
+    options: ["120 km/h","220 km/h","320 km/h","430 km/h","680 km/h"],
+    correct: 3
+  },
+  {
+    q: "O que é um supercondutor?",
+    options: ["Um material que bloqueia totalmente a passagem de elétrons","Um material que conduz eletricidade sem resistência em temperaturas muito baixas","Um ímã permanente natural","Um tipo de isolante térmico usado em trens","Um gerador portátil de energia solar"],
+    correct: 1
+  },
+  {
+    q: "O fenômeno de levitação magnética é possível porque:",
+    options: ["Ímãs podem anular completamente a gravidade","O campo magnético pode repelir ou suspender materiais condutores/supercondutores","Os elétrons giram em sentido contrário ao da Terra","A pressão do ar cria sustentação como num avião","O atrito do ar aumenta a estabilidade"],
+    correct: 1
+  },
+  {
+    q: "Uma aplicação prática de eletromagnetismo no dia a dia é:",
+    options: ["Motores elétricos em eletrodomésticos","Somente no Maglev","Movimento das marés","Somente em experimentos de laboratório","Dobramento da luz em lentes"],
+    correct: 0
+  },
+  {
+    q: "No Maglev, o princípio físico que permite flutuação estável é:",
+    options: ["Efeito Hall quântico","Força de Lorentz","Efeito Meissner","Efeito Joule","Indução eletrostática"],
+    correct: 2
+  },
+  {
+    q: "A força de Lorentz que atua sobre uma partícula carregada em movimento é descrita pela equação:",
+    options: ["F = m·a","F = q(E + v × B)","F = -kx","F = G·(m1·m2)/r²","F = P/Δt"],
+    correct: 1
+  }
+];
+
+// Embaralhar alternativas mantendo a correta
+questions.forEach(q => {
+  let correctText = q.options[q.correct];
+  q.options = shuffleArray(q.options.slice());
+  q.correct = q.options.indexOf(correctText);
+});
+
+  let current=0, score=0;
+  const bar=document.querySelector('.bar');
+  const step=document.querySelector('.step');
+  const scoreEl=document.querySelector('.score');
+  const questionEl=document.getElementById('question');
+  const optionsEl=document.getElementById('options');
+  const card=document.getElementById('card');
+  const end=document.getElementById('end');
+  const finalText=document.getElementById('finalText');
+  const again=document.getElementById('again');
+
+function render(){
+    bar.style.width=`${(current/questions.length)*100}%`;
+    step.textContent=`Pergunta ${current+1} de ${questions.length}`;
+    scoreEl.textContent=`Acertos: ${score}`;
+    
+    // Mostrar alerta na pergunta 8 (índice 7)
+    if(current === 7){
+        const alerta = document.getElementById("alertDificil");
+        alerta.classList.remove("hidden");
+        setTimeout(()=> alerta.classList.add("hidden"), 2000);
+    }
+
+    const q = questions[current].q || questions[current].question; // compatível com suas duas chaves
+    const options = questions[current].options;
+    questionEl.textContent = q;
+    optionsEl.innerHTML = "";
+    options.forEach((t,i)=>{
+      const b=document.createElement("button");
+      b.className="btn";
+      b.textContent=`${String.fromCharCode(65+i)}) ${t}`;
+      b.onclick=()=>onAnswer(b,i);
+      optionsEl.appendChild(b);
+    });
+}
+
+  function onAnswer(btn,idx){
+    const right=questions[current].correct;
+    if(idx===right){
+      btn.classList.add("correct");
+      score++;
+      setTimeout(()=>{
+        current++;
+        if(current>=questions.length){finish();return;}
+        render();
+      },600);
+    }else{
+      btn.classList.add("wrong");
+      btn.disabled=true;
+    }
+  }
+
+  function finish(){
+    bar.style.width="100%";
+    card.classList.add("hidden");
+    end.style.display="block";
+    finalText.textContent=`Você acertou ${score} de ${questions.length}.`;
+  }
+
+  again.onclick=()=>{
+    current=0;score=0;
+    card.classList.remove("hidden");end.style.display="none";
+    render();
+  };
+
+  render();
+
+  // ===== Konami Code =====
+  const konami = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","a","b"];
+  let pos=0, lastTime=0;
+  document.addEventListener("keydown",(e)=>{
+    const now=Date.now();
+    if(now-lastTime>1500){pos=0;} // reset se demorar muito
+    lastTime=now;
+    if(e.key.toLowerCase()===konami[pos].toLowerCase()){
+      pos++;
+      if(pos===konami.length){
+        showCheat();
+        pos=0;
+      }
+    }else{
+      pos=0;
+    }
+  });
+
+  function showCheat(){
+    const cheat=document.getElementById("cheatBox");
+    const list=document.getElementById("answersList");
+    list.innerHTML="";
+    questions.forEach((q,i)=>{
+      const li=document.createElement("li");
+      li.textContent=`${i+1}. ${q.options[q.correct]}`;
+      list.appendChild(li);
+    });
+    cheat.style.display="block";
+  }
+})();
+document.getElementById("closeCheat").addEventListener("click", () => {
+  document.getElementById("cheatBox").style.display = "none";
+});
+
+</script>
+</body>
+</html>
