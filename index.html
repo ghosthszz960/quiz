@@ -38,7 +38,7 @@
   .progress{height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden;}
   .bar{height:100%; width:0%; background:linear-gradient(90deg, #28f5ff, #8fffca); transition:width .5s ease;}
   .counter{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-top:8px;}
-  .card{background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:22px; position:relative;}
+  .card{background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:22px; position:relative;  animation: fadeIn .5s ease;}
   .question{font-size:20px; margin:0 0 14px;}
   .options{display:grid; gap:12px; margin-top:14px;}
   .btn{width:100%; text-align:left; padding:14px 16px; border-radius:14px; cursor:pointer;
@@ -65,7 +65,10 @@
   .again{border:none; border-radius:12px; padding:12px 16px; cursor:pointer;
     background:linear-gradient(90deg, #28f5ff, #8fffca); color:#072237; font-weight:700;}
   .hidden{ display:none!important;}
-
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
   /* Caixa de respostas (cheat Konami) */
   .cheatBox{
     position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
@@ -98,6 +101,25 @@
     50%{opacity:1; transform:translate(-50%,-50%) scale(1.1);}
     100%{opacity:0; transform:translate(-50%,-50%) scale(1);}
   }
+  .bar.grow {
+  animation: growPulse 0.6s ease;
+}
+
+@keyframes growPulse {
+  0% {
+    transform: scaleY(1);
+    box-shadow: 0 0 0 rgba(111,231,255,0);
+  }
+  50% {
+    transform: scaleY(1.4);
+    box-shadow: 0 0 16px rgba(111,231,255,0.8);
+  }
+  100% {
+    transform: scaleY(1);
+    box-shadow: 0 0 0 rgba(111,231,255,0);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -105,8 +127,8 @@
   <header>
     <div class="logo">⚡</div>
     <div class="title">
-      <h1>Quiz – Levitação Magnética</h1>
-      <p>8 perguntas • acerte para avançar</p>
+      <h1>Quiz – Radiação do corpo negro (E=hf)</h1>
+      <p>10 perguntas • acerte para avançar</p>
     </div>
   </header>
   <section class="progress-wrap">
@@ -150,51 +172,119 @@ function shuffleArray(arr) {
   }
   return arr;
 }
-
-// Array original de perguntas
+// Perguntas sobre Radiação do Corpo Negro (E = hf)
 const questions = [
   {
-    q: "O que permite o trem Maglev ‘flutuar’ sobre os trilhos?",
-    options: ["Efeito giroscópico das rodas","Campos magnéticos (eletromagnetismo)","Pressão de ar comprimido vinda do solo","Correntes marítimas subterrâneas","Energia solar direta nos trilhos"],
-    correct: 1
-  },
-  {
-    q: "Qual é a principal vantagem de não haver contato com os trilhos?",
-    options: ["Aumentar o consumo de energia","Reduzir o atrito e permitir altas velocidades","Produzir mais ruído","Facilitar curvas por derrapagem","Aumentar a emissão de poluentes"],
-    correct: 1
-  },
-  {
-    q: "O Maglev de Xangai é famoso por atingir aproximadamente:",
-    options: ["120 km/h","220 km/h","320 km/h","430 km/h","680 km/h"],
-    correct: 3
-  },
-  {
-    q: "O que é um supercondutor?",
-    options: ["Um material que bloqueia totalmente a passagem de elétrons","Um material que conduz eletricidade sem resistência em temperaturas muito baixas","Um ímã permanente natural","Um tipo de isolante térmico usado em trens","Um gerador portátil de energia solar"],
-    correct: 1
-  },
-  {
-    q: "O fenômeno de levitação magnética é possível porque:",
-    options: ["Ímãs podem anular completamente a gravidade","O campo magnético pode repelir ou suspender materiais condutores/supercondutores","Os elétrons giram em sentido contrário ao da Terra","A pressão do ar cria sustentação como num avião","O atrito do ar aumenta a estabilidade"],
-    correct: 1
-  },
-  {
-    q: "Uma aplicação prática de eletromagnetismo no dia a dia é:",
-    options: ["Motores elétricos em eletrodomésticos","Somente no Maglev","Movimento das marés","Somente em experimentos de laboratório","Dobramento da luz em lentes"],
+    q: "O que significa a expressão E = hf na física da radiação do corpo negro?",
+    options: [
+      "A energia de um fóton é proporcional à frequência da radiação",
+      "A força elétrica é proporcional à frequência do campo",
+      "A energia térmica é inversamente proporcional à temperatura",
+      "A massa é proporcional à velocidade da luz",
+      "A energia de um elétron depende da sua massa de repouso"
+    ],
     correct: 0
   },
   {
-    q: "No Maglev, o princípio físico que permite flutuação estável é:",
-    options: ["Efeito Hall quântico","Força de Lorentz","Efeito Meissner","Efeito Joule","Indução eletrostática"],
+    q: "Quem propôs a relação E = hf e introduziu o conceito de quantização de energia?",
+    options: [
+      "Isaac Newton",
+      "Albert Einstein",
+      "Max Planck",
+      "Niels Bohr",
+      "James Clerk Maxwell"
+    ],
     correct: 2
   },
   {
-    q: "A força de Lorentz que atua sobre uma partícula carregada em movimento é descrita pela equação:",
-    options: ["F = m·a","F = q(E + v × B)","F = -kx","F = G·(m1·m2)/r²","F = P/Δt"],
+    q: "O que é um corpo negro ideal?",
+    options: [
+      "Um objeto que reflete toda a radiação incidente",
+      "Um material que absorve e emite radiação igualmente em todas as frequências",
+      "Um corpo que não emite nenhuma radiação",
+      "Um objeto que emite apenas radiação visível",
+      "Um corpo que refrata toda a luz"
+    ],
+    correct: 1
+  },
+  {
+    q: "Qual é a constante de Planck (h) aproximadamente?",
+    options: [
+      "6,63 × 10⁻³⁴ J·s",
+      "3,00 × 10⁸ m/s",
+      "9,81 m/s²",
+      "1,60 × 10⁻¹⁹ C",
+      "8,31 J/(mol·K)"
+    ],
+    correct: 0
+  },
+  {
+    q: "De acordo com a lei de Planck, o espectro de radiação de um corpo negro depende de:",
+    options: [
+      "Sua cor e massa",
+      "Sua temperatura",
+      "A pressão atmosférica",
+      "O tipo de material",
+      "A intensidade da luz incidente"
+    ],
+    correct: 1
+  },
+  {
+    q: "A frequência de pico da radiação emitida por um corpo negro aumenta com:",
+    options: [
+      "O aumento da temperatura",
+      "A diminuição da temperatura",
+      "Aumentar a área superficial",
+      "Diminuir a massa do corpo",
+      "Aumentar a gravidade local"
+    ],
+    correct: 0
+  },
+  {
+    q: "Qual lei relaciona a temperatura de um corpo negro com o comprimento de onda de máxima emissão?",
+    options: [
+      "Lei de Wien",
+      "Lei de Stefan-Boltzmann",
+      "Lei de Ohm",
+      "Lei de Coulomb",
+      "Lei de Snell"
+    ],
+    correct: 0
+  },
+  {
+    q: "Segundo a Lei de Stefan-Boltzmann, a potência total irradiada por unidade de área é proporcional a:",
+    options: [
+      "T²",
+      "T³",
+      "T⁴",
+      "1/T",
+      "T"
+    ],
+    correct: 2
+  },
+  {
+    q: "O modelo clássico falhava em explicar o espectro do corpo negro por causa do:",
+    options: [
+      "Efeito Doppler",
+      "Efeito fotoelétrico",
+      "Ultravioleta catastrófico",
+      "Efeito Compton",
+      "Desvio gravitacional"
+    ],
+    correct: 2
+  },
+  {
+    q: "O conceito de fóton, associado à radiação do corpo negro, descreve:",
+    options: [
+      "Uma onda estacionária de matéria",
+      "Uma partícula de energia quantizada associada à luz",
+      "Um elétron acelerado",
+      "Um núcleo atômico excitado",
+      "Um campo magnético estático"
+    ],
     correct: 1
   }
 ];
-
 // Embaralhar alternativas mantendo a correta
 questions.forEach(q => {
   let correctText = q.options[q.correct];
@@ -214,26 +304,38 @@ questions.forEach(q => {
   const again=document.getElementById('again');
 
 function render(){
-    bar.style.width=`${(current/questions.length)*100}%`;
-    step.textContent=`Pergunta ${current+1} de ${questions.length}`;
-    scoreEl.textContent=`Acertos: ${score}`;
+  card.classList.remove("fade");
+  void card.offsetWidth; // reinicia animação
+  card.classList.add("fade");
+    // Atualiza barra de progresso
+    bar.style.width = `${(current/questions.length)*100}%`;
+
+    // 🔹 Reinicia animação de crescimento/shine
+    bar.classList.remove("grow");
+    void bar.offsetWidth; // força reflow para resetar animação
+    bar.classList.add("grow");
+
+    // Atualiza textos
+    step.textContent = `Pergunta ${current+1} de ${questions.length}`;
+    scoreEl.textContent = `Acertos: ${score}`;
     
-    // Mostrar alerta na pergunta 8 (índice 7)
-    if(current === 7){
+    // 🔸 Mostrar alerta na 10ª pergunta (índice 9)
+    if(current === 9){
         const alerta = document.getElementById("alertDificil");
         alerta.classList.remove("hidden");
         setTimeout(()=> alerta.classList.add("hidden"), 2000);
     }
 
-    const q = questions[current].q || questions[current].question; // compatível com suas duas chaves
+    // Renderiza pergunta e opções
+    const q = questions[current].q || questions[current].question;
     const options = questions[current].options;
     questionEl.textContent = q;
     optionsEl.innerHTML = "";
     options.forEach((t,i)=>{
-      const b=document.createElement("button");
-      b.className="btn";
-      b.textContent=`${String.fromCharCode(65+i)}) ${t}`;
-      b.onclick=()=>onAnswer(b,i);
+      const b = document.createElement("button");
+      b.className = "btn";
+      b.textContent = `${String.fromCharCode(65+i)}) ${t}`;
+      b.onclick = () => onAnswer(b,i);
       optionsEl.appendChild(b);
     });
 }
@@ -269,12 +371,11 @@ function render(){
 
   render();
 
-  // ===== Konami Code =====
   const konami = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","a","b"];
   let pos=0, lastTime=0;
   document.addEventListener("keydown",(e)=>{
     const now=Date.now();
-    if(now-lastTime>1500){pos=0;} // reset se demorar muito
+    if(now-lastTime>1500){pos=0;} 
     lastTime=now;
     if(e.key.toLowerCase()===konami[pos].toLowerCase()){
       pos++;
