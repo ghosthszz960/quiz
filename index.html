@@ -5,127 +5,47 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Quiz – Levitação Magnética</title>
 <style>
-  :root{
-    --bg:#0b1020;
-    --card:#121935;
-    --accent:#6ee7ff;
-    --text:#e6ecff;
-    --muted:#9fb0ff;
-    --right:#1dd1a1;
-    --wrong:#ff6b6b;
-    --shadow: 0 10px 30px rgba(0,0,0,.35);
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; min-height:100vh; display:grid; place-items:center;
-    background: radial-gradient(1200px 800px at 70% -10%, #1b2657 0%, #0d1430 45%, #0a0f24 100%), var(--bg);
-    color:var(--text); font:500 16px/1.4 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;
-  }
-  .app{
-    width:min(920px, 92vw);
-    background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02)) , var(--card);
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:24px; box-shadow:var(--shadow);
-    padding:24px 22px 28px;
-    position:relative; overflow:hidden;
-  }
-  header{display:flex; align-items:center; gap:14px; margin-bottom:18px;}
-  .logo{width:42px; height:42px; display:grid; place-items:center; border-radius:12px;
-    background:conic-gradient(from 180deg at 50% 50%, #1b9cff, #6ee7ff, #8fffca, #1b9cff);}
-  .title h1{font-size:20px; margin:0}
-  .title p{margin:0; color:var(--muted); font-size:13px}
-  .progress-wrap{margin:10px 0 20px}
-  .progress{height:10px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden;}
-  .bar{height:100%; width:0%; background:linear-gradient(90deg, #28f5ff, #8fffca); transition:width .5s ease;}
-  .counter{display:flex; justify-content:space-between; color:var(--muted); font-size:13px; margin-top:8px;}
-  .card{background:rgba(255,255,255,.02); border:1px solid rgba(255,255,255,.06); border-radius:20px; padding:22px; position:relative;  animation: fadeIn .5s ease;}
-  .question{font-size:20px; margin:0 0 14px;}
-  .options{display:grid; gap:12px; margin-top:14px;}
-  .btn{width:100%; text-align:left; padding:14px 16px; border-radius:14px; cursor:pointer;
-    border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03);
-    color:var(--text); transition:transform .08s ease, border-color .2s ease, background .2s ease;}
-  .btn:hover{ transform:translateY(-1px); border-color:rgba(255,255,255,.18);}
-  .btn:disabled{ opacity:.7; cursor:not-allowed;}
-  .correct{border-color:rgba(29,209,161,.7)!important;
-    background:linear-gradient(180deg, rgba(29,209,161,.18), rgba(29,209,161,.10));
-    animation:glowOk .35s ease;}
-  .wrong{border-color:rgba(255,107,107,.8)!important;
-    background:linear-gradient(180deg, rgba(255,107,107,.18), rgba(255,107,107,.10));
-    animation:shake .35s ease;}
-  @keyframes glowOk {0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
-  @keyframes shake {
-    0%,100%{transform:translateX(0)}
-    25%{transform:translateX(-6px)}
-    50%{transform:translateX(6px)}
-    75%{transform:translateX(-4px)}
-  }
-  .end{display:none; text-align:center; padding:26px 10px;}
-  .end h2{margin:0 0 6px; font-size:26px}
-  .end p{margin:6px 0 16px; color:var(--muted)}
-  .again{border:none; border-radius:12px; padding:12px 16px; cursor:pointer;
-    background:linear-gradient(90deg, #28f5ff, #8fffca); color:#072237; font-weight:700;}
-  .hidden{ display:none!important;}
-@keyframes fadeIn {
-  from {opacity: 0; transform: translateY(20px);}
-  to {opacity: 1; transform: translateY(0);}
-}
-  /* Caixa de respostas (cheat Konami) */
-  .cheatBox{
-    position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-    background:var(--card); border:2px solid var(--accent);
-    border-radius:16px; padding:20px; z-index:9999; width:80%; max-width:500px;
-    box-shadow:0 0 20px rgba(0,0,0,.6); text-align:left; display:none;
-  }
-  .cheatBox h3{margin-top:0; color:var(--accent);}
-  .cheatBox ul{padding-left:18px;}
-  .alertDificil{
-    position:fixed;
-    top:50%;
-    left:50%;
-    transform:translate(-50%,-50%);
-    background:linear-gradient(90deg,#ff4e50,#f9d423);
-    color:#111;
-    font-size:28px;
-    font-weight:bold;
-    padding:20px 40px;
-    border-radius:16px;
-    box-shadow:0 0 20px rgba(255,0,0,.7);
-    text-align:center;
-    z-index:9999;
-    opacity:0;
-    animation:fadePulse 2s forwards;
-  }
-
-  @keyframes fadePulse{
-    0%{opacity:0; transform:translate(-50%,-50%) scale(0.5);}
-    50%{opacity:1; transform:translate(-50%,-50%) scale(1.1);}
-    100%{opacity:0; transform:translate(-50%,-50%) scale(1);}
-  }
-  .bar.grow {
-  animation: growPulse 0.6s ease;
-}
-
-@keyframes growPulse {
-  0% {
-    transform: scaleY(1);
-    box-shadow: 0 0 0 rgba(111,231,255,0);
-  }
-  50% {
-    transform: scaleY(1.4);
-    box-shadow: 0 0 16px rgba(111,231,255,0.8);
-  }
-  100% {
-    transform: scaleY(1);
-    box-shadow: 0 0 0 rgba(111,231,255,0);
-  }
-}
-
+:root{--bg:#0b1020;--card:#121935;--accent:#6ee7ff;--text:#e6ecff;--muted:#9fb0ff;--right:#1dd1a1;--wrong:#ff6b6b;--shadow:0 10px 30px rgba(0,0,0,.35);}
+*{box-sizing:border-box;}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:radial-gradient(1200px 800px at 70% -10%,#1b2657 0%,#0d1430 45%,#0a0f24 100%),var(--bg);color:var(--text);font:500 16px/1.4 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+.app{width:min(920px,92vw);background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02)),var(--card);border:1px solid rgba(255,255,255,.06);border-radius:24px;box-shadow:var(--shadow);padding:24px 22px 28px;position:relative;overflow:hidden;}
+header{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.logo {width: 42px;height: 42px;display: grid;place-items: center;border-radius: 12px;background:url("image.png") center/cover no-repeat,conic-gradient(from 180deg at 50% 50%, #8d1bff, #736eff, #8f98ff, #8d1bff);}
+.title h1{font-size:20px;margin:0;}
+.title p{margin:0;color:var(--muted);font-size:13px;}
+.progress-wrap{margin:10px 0 20px;}
+.progress{height:10px;background:rgba(255,255,255,.08);border-radius:999px;overflow:hidden;}
+.bar{height:100%;width:0%;background:linear-gradient(90deg,#28f5ff,#8fffca);transition:width .5s ease;}
+.counter{display:flex;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:8px;}
+.card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:20px;padding:22px;position:relative;animation:fadeIn .5s ease;}
+.question{font-size:20px;margin:0 0 14px;}
+.options{display:grid;gap:12px;margin-top:14px;}
+.btn{width:100%;text-align:left;padding:14px 16px;border-radius:14px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:var(--text);transition:transform .08s ease,border-color .2s ease,background .2s ease;}
+.btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.18);}
+.btn:disabled{opacity:.7;cursor:not-allowed;}
+.correct{border-color:rgba(29,209,161,.7)!important;background:linear-gradient(180deg,rgba(29,209,161,.18),rgba(29,209,161,.10));animation:glowOk .35s ease;}
+.wrong{border-color:rgba(255,107,107,.8)!important;background:linear-gradient(180deg,rgba(255,107,107,.18),rgba(255,107,107,.10));animation:shake .35s ease;}
+@keyframes glowOk{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.end{display:none;text-align:center;padding:26px 10px;}
+.end h2{margin:0 0 6px;font-size:26px;}
+.end p{margin:6px 0 16px;color:var(--muted);}
+.again{border:none;border-radius:12px;padding:12px 16px;cursor:pointer;background:linear-gradient(90deg,#28f5ff,#8fffca);color:#072237;font-weight:700;}
+.hidden{display:none!important;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.cheatBox{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:2px solid var(--accent);border-radius:16px;padding:20px;z-index:9999;width:80%;max-width:500px;box-shadow:0 0 20px rgba(0,0,0,.6);text-align:left;display:none;}
+.cheatBox h3{margin-top:0;color:var(--accent);}
+.cheatBox ul{padding-left:18px;}
+.alertDificil{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(90deg,#ff4e50,#f9d423);color:#111;font-size:28px;font-weight:bold;padding:20px 40px;border-radius:16px;box-shadow:0 0 20px rgba(255,0,0,.7);text-align:center;z-index:9999;opacity:0;animation:fadePulse 2s forwards;}
+@keyframes fadePulse{0%{opacity:0;transform:translate(-50%,-50%) scale(.5);}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1);}100%{opacity:0;transform:translate(-50%,-50%) scale(1);}}
+.bar.grow{animation:growPulse .6s ease;}
+@keyframes growPulse{0%{transform:scaleY(1);box-shadow:0 0 0 rgba(111,231,255,0);}50%{transform:scaleY(1.4);box-shadow:0 0 16px rgba(111,231,255,.8);}100%{transform:scaleY(1);box-shadow:0 0 0 rgba(111,231,255,0);}}
 </style>
 </head>
 <body>
 <main class="app">
   <header>
-    <div class="logo">⚡</div>
+    <div class="logo"></div>
     <div class="title">
       <h1>Quiz – Radiação do corpo negro (E=hf)</h1>
       <p>10 perguntas • acerte para avançar</p>
@@ -172,7 +92,6 @@ function shuffleArray(arr) {
   }
   return arr;
 }
-// Perguntas sobre Radiação do Corpo Negro (E = hf)
 const questions = [
   {
     q: "O que significa a expressão E = hf na física da radiação do corpo negro?",
@@ -285,7 +204,6 @@ const questions = [
     correct: 1
   }
 ];
-// Embaralhar alternativas mantendo a correta
 questions.forEach(q => {
   let correctText = q.options[q.correct];
   q.options = shuffleArray(q.options.slice());
@@ -305,28 +223,21 @@ questions.forEach(q => {
 
 function render(){
   card.classList.remove("fade");
-  void card.offsetWidth; // reinicia animação
+  void card.offsetWidth;
   card.classList.add("fade");
-    // Atualiza barra de progresso
-    bar.style.width = `${(current/questions.length)*100}%`;
+  bar.style.width = `${(current/questions.length)*100}%`;
+  bar.classList.remove("grow");
+  void bar.offsetWidth;
+  bar.classList.add("grow");
 
-    // 🔹 Reinicia animação de crescimento/shine
-    bar.classList.remove("grow");
-    void bar.offsetWidth; // força reflow para resetar animação
-    bar.classList.add("grow");
-
-    // Atualiza textos
     step.textContent = `Pergunta ${current+1} de ${questions.length}`;
     scoreEl.textContent = `Acertos: ${score}`;
     
-    // 🔸 Mostrar alerta na 10ª pergunta (índice 9)
     if(current === 9){
         const alerta = document.getElementById("alertDificil");
         alerta.classList.remove("hidden");
         setTimeout(()=> alerta.classList.add("hidden"), 2000);
     }
-
-    // Renderiza pergunta e opções
     const q = questions[current].q || questions[current].question;
     const options = questions[current].options;
     questionEl.textContent = q;
@@ -368,7 +279,6 @@ function render(){
     card.classList.remove("hidden");end.style.display="none";
     render();
   };
-
   render();
 
   const konami = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","a","b"];
@@ -403,7 +313,6 @@ function render(){
 document.getElementById("closeCheat").addEventListener("click", () => {
   document.getElementById("cheatBox").style.display = "none";
 });
-
 </script>
 </body>
 </html>
